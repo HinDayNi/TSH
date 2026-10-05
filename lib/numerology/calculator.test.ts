@@ -4,11 +4,14 @@ import {
     stripAccents,
     classifyLetter,
     classifyWord,
+    classifyLetters,
     classifyWordLetters,
     calculateNameNumbers,
     calculateLifePath,
     calculateBirthChart,
     calculatePinnacles,
+    calculateChallenges,
+    calculateKarmicDebt,
     calculatePersonalYear,
     reduceNumber,
     reduceWithKarmicCheck,
@@ -72,27 +75,27 @@ describe('Numerology Pure TypeScript Engine', () => {
             expect(classifyLetter('Y', 2, 'THY')).toBe('VOWEL');
         });
 
-        it('tính là NGUYÊN ÂM khi thuộc vần "UY" (HUY, THUY, DUY)', () => {
+        it('tính Y cuối là phụ âm sau U không dấu, nhưng là nguyên âm trong Thúy/Quỳnh', () => {
             const huy = classifyWord('HUY');
             expect(huy.letters.find(l => l.char === 'H')?.category).toBe('CONSONANT');
             expect(huy.letters.find(l => l.char === 'U')?.category).toBe('VOWEL');
-            expect(huy.letters.find(l => l.char === 'Y')?.category).toBe('VOWEL');
+            expect(huy.letters.find(l => l.char === 'Y')?.category).toBe('CONSONANT');
 
-            const thuy = classifyWord('THUY');
+            const thuy = classifyWord('THÚY');
             const thuyY = thuy.letters[3];
             expect(thuyY.char).toBe('Y');
             expect(thuyY.category).toBe('VOWEL');
 
-            const duy = classifyWord('DUY');
-            expect(duy.letters[2].char).toBe('Y');
-            expect(duy.letters[2].category).toBe('VOWEL');
+            const quynh = classifyWord('QUỲNH');
+            expect(quynh.letters.find(l => l.char === 'Y')?.category).toBe('VOWEL');
         });
 
-        it('tính là PHỤ ÂM khi đứng đầu từ có nguyên âm sau nó (YEN, YEU)', () => {
-            expect(classifyLetter('Y', 0, 'YEN')).toBe('CONSONANT');
+        it('tính là NGUYÊN ÂM khi đứng đầu âm tiết (Y, Ý, Yến)', () => {
+            expect(classifyLetter('Y', 0, 'Y')).toBe('VOWEL');
+            expect(classifyLetter('Y', 0, 'YEN')).toBe('VOWEL');
+            expect(classifyLetter('Y', 0, 'YEU')).toBe('VOWEL');
             expect(classifyLetter('E', 1, 'YEN')).toBe('VOWEL');
             expect(classifyLetter('N', 2, 'YEN')).toBe('CONSONANT');
-            expect(classifyLetter('Y', 0, 'YEU')).toBe('CONSONANT');
         });
 
         it('tính là PHỤ ÂM khi đứng sau A hoặc E (MAY, BEY)', () => {
@@ -110,8 +113,9 @@ describe('Numerology Pure TypeScript Engine', () => {
             expect(items).toEqual([
                 { char: 'H', type: 'consonant' },
                 { char: 'U', type: 'vowel' },
-                { char: 'Y', type: 'vowel' }
+                { char: 'Y', type: 'consonant' }
             ]);
+            expect(classifyLetters('Ý')[0].category).toBe('VOWEL');
         });
     });
 
@@ -153,14 +157,14 @@ describe('Numerology Pure TypeScript Engine', () => {
         const name = 'Nguyễn Văn Huy';
         const dob = '1990-11-22';
 
-        it('phân tích tên: chữ Y trong Huy là nguyên âm, tính đúng Soul Urge và Personality', () => {
+        it('phân tích tên: chữ Y cuối trong Huy là phụ âm', () => {
             const nameResult = calculateNameNumbers(name);
             expect(nameResult.normalizedName).toBe('NGUYEN VAN HUY');
 
             const huyWord = nameResult.words.find(w => w.word === 'HUY');
             expect(huyWord).toBeDefined();
             const yLetter = huyWord?.letters.find(l => l.char === 'Y');
-            expect(yLetter?.category).toBe('VOWEL');
+            expect(yLetter?.category).toBe('CONSONANT');
             expect(yLetter?.pythagoreanValue).toBe(7);
 
             expect(nameResult.expressionNumber).toBeGreaterThan(0);
@@ -267,13 +271,21 @@ describe('Numerology Pure TypeScript Engine', () => {
             expect(lpRes.lifePath).toBe(7);
             expect(lpRes.lifePathMethod1).toBe(7);
             expect(lpRes.lifePathMethod2).toBe(7);
-            expect(lpRes.rawSum).toBe(7);
+            expect(lpRes.rawSum).toBe(34);
+            expect(lpRes.allDigitsSum).toBe(34);
 
             // Kiểm tra trường hợp nợ nghiệp 19: 1990-09-09 -> Year=1, Month=9, Day=9 -> total=19
             const debtRes = RuleEngine.calculateLifePath('1990-09-09');
             expect(debtRes.hasDebt).toBe(true);
             expect(debtRes.karmicDebts).toContain(19);
             expect(debtRes.lifePath).toBe(1);
+        });
+
+        it('calculateKarmicDebt nhận diện đủ 13, 14, 16, 19', () => {
+            expect(calculateKarmicDebt(13).karmicDebts).toContain(13);
+            expect(calculateKarmicDebt(14).karmicDebts).toContain(14);
+            expect(calculateKarmicDebt(16).karmicDebts).toContain(16);
+            expect(calculateKarmicDebt(19).karmicDebts).toContain(19);
         });
 
         it('RuleEngine.calculateNameNumbers tính Sứ mệnh, Linh hồn, Nhân cách', () => {
@@ -340,6 +352,7 @@ describe('Numerology Pure TypeScript Engine', () => {
             expect(timeline.cycles.first).toBeDefined();
             expect(timeline.pinnacles).toHaveLength(4);
             expect(timeline.challenges).toHaveLength(4);
+            expect(timeline.challenges).toEqual(calculateChallenges(dob));
 
             const maturity = RuleEngine.calculateMaturityNumber(7, 3);
             expect(maturity).toBe(1); // 7 + 3 = 10 -> 1

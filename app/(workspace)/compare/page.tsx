@@ -9,6 +9,7 @@ import { useProfile } from '@/lib/context/ProfileContext';
 import { SpotlightGuide, GuideStep } from '@/components/shared/SpotlightGuide';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { HeartHandshake, GitCompare, Users, Compass } from 'lucide-react';
+import { PremiumGate } from '@/components/shared/PremiumGate';
 
 const COMPARE_GUIDE_STEPS: GuideStep[] = [
     {
@@ -174,11 +175,20 @@ function CompareContent() {
             {/* Content Card Section */}
             <div data-tour="compare-content-card">
                 {subTab === 'couple' && (
-                    <div className="bg-white rounded-2xl p-6 sm:p-7 border border-[#E7E4DD] shadow-subtle relative">
+                    <div className="space-y-5">
+                        <div className="bg-white rounded-2xl p-6 sm:p-7 border border-[#E7E4DD] shadow-subtle relative">
                         <RelationshipMatrix
                             defaultP1Name={profile?.fullName || 'Nguyễn Văn Huy'}
                             defaultP1Dob={profile?.dob || '1990-11-22'}
                         />
+                        </div>
+                        <PremiumGate
+                            title="Tương thích cặp đôi chuyên sâu"
+                            description="Khám phá các mô thức xung đột, ngôn ngữ yêu thương và kế hoạch đồng hành theo từng giai đoạn."
+                        >
+                            <h3 className="font-serif text-xl font-bold">Bản đồ tương tác cảm xúc</h3>
+                            <p className="mt-3 text-sm">Phân tích điểm bổ trợ và bài học chung giữa hai hồ sơ.</p>
+                        </PremiumGate>
                     </div>
                 )}
 

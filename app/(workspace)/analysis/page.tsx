@@ -64,6 +64,9 @@ function AnalysisWorkspaceInner() {
     const selectedType = isCareerParam ? 'lifepath' : (typeParam || 'lifepath');
     const [activeTab, setActiveTab] = useState<string>(() => isCareerParam ? 'career' : (tabParam || 'overview'));
     const [toastOpen, setToastOpen] = useState<boolean>(false);
+    const [aiText, setAiText] = useState('');
+    const [aiLoading, setAiLoading] = useState(false);
+    const [aiError, setAiError] = useState('');
 
     // Sync activeTab when query param changes
     React.useEffect(() => {
@@ -73,6 +76,69 @@ function AnalysisWorkspaceInner() {
             setActiveTab(tabParam);
         }
     }, [isCareerParam, tabParam]);
+
+    const analysisGoal = activeTab === 'relationships'
+        ? 'relationship'
+        : activeTab === 'growth'
+            ? 'growth'
+            : 'career';
+
+    React.useEffect(() => {
+        if (!data) return;
+
+        const controller = new AbortController();
+        const loadAnalysis = async () => {
+            setAiText('');
+            setAiError('');
+            setAiLoading(true);
+
+            try {
+                const response = await fetch('/api/analysis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: controller.signal,
+                    body: JSON.stringify({
+                        goal: analysisGoal,
+                        indicators: {
+                            name: data.fullName,
+                            lifePath: data.lp,
+                            expression: data.expression,
+                            soulUrge: data.soulUrge,
+                            personality: data.personality,
+                            personalYear: data.personalYear,
+                            karmicDebts: data.allKarmicDebts,
+                            selectedNumber: { type: selectedType, value: currentConfig.number }
+                        }
+                    })
+                });
+
+                if (!response.ok || !response.body) {
+                    throw new Error('AI analysis unavailable');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let result = '';
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    result += decoder.decode(value, { stream: true });
+                    setAiText(result);
+                }
+                result += decoder.decode();
+                setAiText(result);
+            } catch (error) {
+                if (!controller.signal.aborted) {
+                    setAiError('Chưa thể tải luận giải động lúc này. Nội dung nền vẫn được hiển thị.');
+                }
+            } finally {
+                if (!controller.signal.aborted) setAiLoading(false);
+            }
+        };
+
+        loadAnalysis();
+        return () => controller.abort();
+    }, [data, selectedType, analysisGoal]);
 
     if (!data) {
         return (
@@ -205,7 +271,23 @@ function AnalysisWorkspaceInner() {
 
             {/* Focused Tab Content Box with Smooth Fade/Scale */}
             <div className="bg-white rounded-2xl border border-[#E7E4DD] p-5 sm:p-6 lg:p-7 shadow-subtle overflow-hidden">
-                <AnimatePresence mode="wait">
+                {(aiLoading || aiText || aiError) && (
+                    <div className="mb-6 rounded-xl border border-[#D3CEEE] bg-[#F8F7FF] p-4 sm:p-5">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Sparkles className="w-4 h-4 text-[#5146A5]" />
+                            <h3 className="text-sm font-semibold text-[#5146A5]">Luận giải dành riêng cho bạn</h3>
+                            {aiLoading && <span className="text-[11px] text-[#706E78]">Đang tổng hợp...</span>}
+                        </div>
+                        {aiText ? (
+                            <p className="whitespace-pre-wrap text-sm leading-7 text-[#1C1B22]">{aiText}</p>
+                        ) : aiError ? (
+                            <p className="text-xs text-[#706E78]">{aiError}</p>
+                        ) : (
+                            <div className="h-16 animate-pulse rounded-lg bg-white/70" />
+                        )}
+                    </div>
+                )}
+                {!aiText && <AnimatePresence mode="wait">
                     <motion.div
                         key={`${selectedType}-${activeTab}`}
                         initial={{ opacity: 0, y: 6 }}
@@ -351,7 +433,7 @@ function AnalysisWorkspaceInner() {
                             </div>
                         )}
                     </motion.div>
-                </AnimatePresence>
+                </AnimatePresence>}
             </div>
         </div>
     );

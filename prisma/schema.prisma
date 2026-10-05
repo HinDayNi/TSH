@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+}
+
+enum PaymentGateway {
+  PAYOS
+  VIETQR
+  MOMO
+  STRIPE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  fullName  String?
+  dob       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id                String         @id @default(cuid())
+  orderId           String         @unique
+  orderCode         Int            @unique
+  amount            Int
+  description       String
+  customerName      String?
+  customerEmail     String?
+  status            OrderStatus    @default(PENDING)
+  isVip             Boolean        @default(false)
+  vipToken          String?
+  vipTokenExpiresAt DateTime?
+  paymentGateway    PaymentGateway @default(PAYOS)
+  transactionId     String?
+  paidAt            DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model Subscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  dob          String?
+  subscribedAt DateTime @default(now())
+}

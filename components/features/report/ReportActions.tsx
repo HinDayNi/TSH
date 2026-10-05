@@ -6,8 +6,24 @@ import { useRouter } from 'next/navigation';
 import { AnalyticsEvents } from '@/lib/monitoring/analytics';
 import { Share2, Printer, Download, Check, Crown, ArrowLeft, X, Zap } from 'lucide-react';
 
-export function ReportActions({ isVip }: { isVip?: boolean }) {
+export interface PdfReportData {
+    vipToken: string;
+    name: string;
+    dob: string;
+    lifePath: number;
+    expression: number;
+    soulUrge: number;
+    personality: number;
+    personalYear: number;
+    matrix: number[][];
+    overview: string;
+    strengths: string[];
+    pinnacles: Array<{ value: number; ageRange: string }>;
+}
+
+export function ReportActions({ isVip, pdfData }: { isVip?: boolean; pdfData?: PdfReportData }) {
     const [copied, setCopied] = useState(false);
+    const [exporting, setExporting] = useState(false);
 
     const handleCopy = () => {
         if (typeof window !== 'undefined') {
@@ -20,6 +36,30 @@ export function ReportActions({ isVip }: { isVip?: boolean }) {
     const handlePrintPdf = () => {
         if (typeof window !== 'undefined') {
             window.print();
+        }
+    };
+
+    const handleExportPdf = async () => {
+        if (!isVip || !pdfData || exporting) return;
+        setExporting(true);
+        try {
+            const response = await fetch('/api/report/export-pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(pdfData)
+            });
+            if (!response.ok) throw new Error('PDF export failed');
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `tsh-report-${pdfData.name}.pdf`;
+            anchor.click();
+            URL.revokeObjectURL(url);
+        } catch {
+            alert('Không thể tạo PDF lúc này. Vui lòng thử lại.');
+        } finally {
+            setExporting(false);
         }
     };
 
@@ -56,11 +96,12 @@ export function ReportActions({ isVip }: { isVip?: boolean }) {
 
             <button
                 type="button"
-                onClick={handlePrintPdf}
+                onClick={handleExportPdf}
+                disabled={!isVip || exporting}
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#5146A5] hover:bg-[#443A8C] px-4 py-2 rounded-xl transition-all cursor-pointer shadow-subtle"
             >
                 <Download className="w-3.5 h-3.5" />
-                <span>Xuất PDF</span>
+                <span>{exporting ? 'Đang tạo PDF...' : 'Xuất PDF'}</span>
             </button>
         </div>
     );
@@ -77,9 +118,59 @@ export function VipUpgradeModal({
 }) {
     const router = useRouter();
     const [simulating, setSimulating] = useState(false);
-    const code = orderCode || 868999;
+    const [activeOrderCode, setActiveOrderCode] = useState(orderCode || 868999);
+    const [checkoutUrl, setCheckoutUrl] = useState('');
+    const [paymentMessage, setPaymentMessage] = useState('Đang tạo mã thanh toán an toàn...');
     const amount = 199000;
-    const transferContent = `TSH VIP ${code}`;
+    const transferContent = `TSH VIP ${activeOrderCode}`;
+
+    React.useEffect(() => {
+        if (!isOpen) return;
+
+        let cancelled = false;
+        let poller: ReturnType<typeof setInterval> | undefined;
+
+        const openPayment = async () => {
+            setPaymentMessage('Đang tạo mã thanh toán an toàn...');
+            try {
+                const response = await fetch('/api/payment/create-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, description: 'TSH VIP' })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'Không thể tạo link PayOS');
+                }
+
+                const createdOrderCode = result.data.orderCode as number;
+                setActiveOrderCode(createdOrderCode);
+                setCheckoutUrl(result.data.checkoutUrl || '');
+                setPaymentMessage('Đang chờ xác nhận thanh toán...');
+
+                poller = setInterval(async () => {
+                    const statusResponse = await fetch(`/api/payment/status?orderCode=${createdOrderCode}`);
+                    const statusResult = await statusResponse.json();
+                    if (statusResult.success && statusResult.data.status === 'PAID' && statusResult.data.accessToken) {
+                        if (poller) clearInterval(poller);
+                        AnalyticsEvents.paymentSuccess(createdOrderCode, amount);
+                        onClose();
+                        router.push(`/report?vipToken=${statusResult.data.accessToken}`);
+                    }
+                }, 2000);
+            } catch (error) {
+                if (!cancelled) {
+                    setPaymentMessage('PayOS chưa sẵn sàng. Bạn có thể dùng mã VietQR hoặc nút thử nghiệm bên dưới.');
+                }
+            }
+        };
+
+        openPayment();
+        return () => {
+            cancelled = true;
+            if (poller) clearInterval(poller);
+        };
+    }, [isOpen]);
 
     const qrUrl = `https://img.vietqr.io/image/MB-0988888888-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(
         transferContent
@@ -92,7 +183,7 @@ export function VipUpgradeModal({
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    orderCode: code,
+                    orderCode: activeOrderCode,
                     amount: amount,
                     description: transferContent
                 })
@@ -101,7 +192,7 @@ export function VipUpgradeModal({
             const json = await res.json();
             if (json.success && json.data?.accessToken) {
                 try {
-                    AnalyticsEvents.paymentSuccess(code, amount);
+                    AnalyticsEvents.paymentSuccess(activeOrderCode, amount);
                 } catch (e) {}
 
                 const url = new URL(window.location.href);
@@ -138,8 +229,19 @@ export function VipUpgradeModal({
                     Mở Khóa Báo Cáo Toàn Diện
                 </h3>
                 <p className="text-xs text-[#706E78] mt-1">
-                    Quét mã VietQR hoặc chuyển khoản để kích hoạt tự động sau 3 giây
+                    {paymentMessage}
                 </p>
+
+                {checkoutUrl && (
+                    <a
+                        href={checkoutUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center mt-3 px-4 py-2 rounded-xl bg-[#5146A5] text-white text-xs font-semibold hover:bg-[#443A8C]"
+                    >
+                        Mở trang thanh toán PayOS
+                    </a>
+                )}
 
                 {/* QR Code & Banking Info */}
                 <div className="my-4 p-4 rounded-xl bg-[#F8F7F4] border border-[#E7E4DD] text-left space-y-3">

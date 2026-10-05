@@ -1191,39 +1191,32 @@ export function isStandardVowel(char: string): boolean {
 }
 
 /**
- * Quy tắc xác định chữ 'Y':
- * - Nếu đứng một mình hoặc chỉ đi cùng phụ âm (như 'VY', 'LY', 'Y') hoặc thuộc vần 'UY' (như 'HUY') -> NGUYÊN ÂM (VOWEL).
- * - Nếu đứng đầu từ có nguyên âm sau nó (như 'YEN') hoặc đứng sau A, E (như 'MAY', 'BEY') -> PHỤ ÂM (CONSONANT).
+ * Quy tắc xác định chữ 'Y' trong một âm tiết tiếng Việt.
+ * Dấu tiếng Việt được giữ lại ở `word` để phân biệt âm tiết như Huy và Thúy.
  */
 export function classifyY(word: string, index: number): LetterCategory {
-    const cleanWord = word.toUpperCase();
-    const len = cleanWord.length;
+    const originalWord = word.toUpperCase();
+    const cleanWord = stripAccents(originalWord);
 
-    if (index === 0 && len > 1 && isStandardVowel(cleanWord[1])) {
-        return 'CONSONANT';
+    if (index === 0) return 'VOWEL';
+
+    const previousChar = cleanWord[index - 1];
+    if (previousChar === 'Q') return 'VOWEL';
+
+    if (previousChar === 'U') {
+        const originalPreviousChar = originalWord[index - 1];
+        const isQuySyllable = cleanWord.startsWith('QU');
+        const hasToneOnU = originalPreviousChar !== 'U';
+        const hasMultiConsonantOnset = index >= 3;
+        return isQuySyllable || hasToneOnU || hasMultiConsonantOnset ? 'VOWEL' : 'CONSONANT';
     }
 
-    if (index > 0) {
-        const prevChar = cleanWord[index - 1];
-        if (prevChar === 'A' || prevChar === 'E') {
-            return 'CONSONANT';
-        }
-    }
+    if (previousChar === 'A' || previousChar === 'O') return 'CONSONANT';
 
-    if (index > 0 && cleanWord[index - 1] === 'U') {
-        return 'VOWEL';
-    }
-
-    const hasOtherVowels = cleanWord.split('').some((c, i) => i !== index && isStandardVowel(c));
-    if (!hasOtherVowels) {
-        return 'VOWEL';
-    }
-
-    if (index > 0 && !isStandardVowel(cleanWord[index - 1])) {
-        return 'VOWEL';
-    }
-
-    return 'CONSONANT';
+    const hasOtherVowels = cleanWord.split('').some((char, charIndex) =>
+        charIndex !== index && isStandardVowel(char)
+    );
+    return hasOtherVowels ? 'CONSONANT' : 'VOWEL';
 }
 
 /**
@@ -1245,13 +1238,14 @@ export function classifyLetter(char: string, index: number, word: string): Lette
  */
 export function classifyWord(word: string): ClassifiedWord {
     const cleanWord = normalizeVietnamese(word);
+    const sourceWord = word.toUpperCase().replace(/\s/g, '');
     const letters: ClassifiedLetter[] = [];
 
     for (let i = 0; i < cleanWord.length; i++) {
         const char = cleanWord[i];
         if (char === ' ') continue;
 
-        const category = classifyLetter(char, i, cleanWord);
+        const category = classifyLetter(char, i, sourceWord);
         const pythagoreanValue = PYTHAGOREAN_MAP[char] || 0;
 
         letters.push({
@@ -1268,44 +1262,25 @@ export function classifyWord(word: string): ClassifiedWord {
     };
 }
 
+/** Phân loại toàn bộ ký tự trong một âm tiết/từ, dùng cho các chỉ số tên. */
+export function classifyLetters(word: string): ClassifiedLetter[] {
+    return classifyWord(word).letters;
+}
+
 /**
  * Phân loại chữ cái theo từ dùng trong RuleEngine cũ: { char: string, type: 'vowel' | 'consonant' }
  */
 export function classifyWordLetters(word: string): Array<{ char: string; type: 'vowel' | 'consonant' }> {
     const result: Array<{ char: string; type: 'vowel' | 'consonant' }> = [];
-    const wordLen = word.length;
-    const baseVowels = ['A', 'E', 'I', 'O', 'U'];
-    const hasOtherVowels = word.split('').some(c => baseVowels.includes(c));
+    const cleanWord = normalizeVietnamese(word);
+    const wordLen = cleanWord.length;
 
     for (let i = 0; i < wordLen; i++) {
-        const char = word[i];
+        const char = cleanWord[i];
         if (!PYTHAGOREAN_MAP[char]) continue;
 
-        if (baseVowels.includes(char)) {
-            result.push({ char, type: 'vowel' });
-        } else if (char === 'Y') {
-            let isYVowel = false;
-            if (!hasOtherVowels) {
-                isYVowel = true;
-            } else {
-                const prevChar = i > 0 ? word[i - 1] : '';
-                const nextChar = i < wordLen - 1 ? word[i + 1] : '';
-                const adjacentToU = (prevChar === 'U' || nextChar === 'U');
-                const hasVowelsOtherThanU = word.split('').some(c => ['A', 'E', 'I', 'O'].includes(c));
-
-                if (adjacentToU && !hasVowelsOtherThanU) {
-                    isYVowel = true;
-                }
-            }
-
-            if (isYVowel) {
-                result.push({ char: 'Y', type: 'vowel' });
-            } else {
-                result.push({ char: 'Y', type: 'consonant' });
-            }
-        } else {
-            result.push({ char, type: 'consonant' });
-        }
+        const category = classifyLetter(char, i, word);
+        result.push({ char, type: category === 'VOWEL' ? 'vowel' : 'consonant' });
     }
     return result;
 }
@@ -1351,6 +1326,11 @@ export function reduceWithKarmicCheck(rawSum: number, keepMaster: boolean = true
         debts.push(current);
     }
     return { value: current, karmicDebts: [...new Set(debts)] };
+}
+
+/** Tính số rút gọn và các mốc Nợ nghiệp xuất hiện trong quá trình rút gọn. */
+export function calculateKarmicDebt(rawNumber: number): KarmicDebtResult {
+    return reduceWithKarmicCheck(rawNumber, true);
 }
 
 // ----------------------------------------------------------------------
@@ -1411,7 +1391,7 @@ export function calculateLifePath(birthDate: string): LifePathResult {
  */
 export function calculateNameNumbers(fullName: string): NameAnalysisResult {
     const normalized = normalizeVietnamese(fullName);
-    const wordList = normalized.split(/\s+/).filter(w => w.length > 0);
+    const wordList = fullName.trim().split(/\s+/).filter(w => w.length > 0);
     const classifiedWords = wordList.map(classifyWord);
 
     let expressionSum = 0;
@@ -1626,8 +1606,10 @@ export function calculatePersonalYear(birthDate: string, targetYear?: number): P
 // ----------------------------------------------------------------------
 
 export function calculateLifePathRuleEngine(dobStr: string): RuleEngineLifePathResult {
-    const parts = dobStr.split('-');
-    if (parts.length !== 3) {
+    let lifePathResult: LifePathResult;
+    try {
+        lifePathResult = calculateLifePath(dobStr);
+    } catch {
         return {
             lifePath: 0,
             lifePathMethod1: 0,
@@ -1640,39 +1622,30 @@ export function calculateLifePathRuleEngine(dobStr: string): RuleEngineLifePathR
         };
     }
 
-    const yearVal = parts[0].split('').reduce((s, d) => s + parseInt(d, 10), 0);
-    const monthVal = parts[1].split('').reduce((s, d) => s + parseInt(d, 10), 0);
-    const dayVal = parts[2].split('').reduce((s, d) => s + parseInt(d, 10), 0);
-
-    const redYear = reduceNumber(yearVal, false);
-    const redMonth = reduceNumber(monthVal, false);
-    const redDay = reduceNumber(dayVal, false);
-
-    const total = redYear + redMonth + redDay;
-
-    const lpResult = reduceWithKarmicCheck(total, true);
-    const lp1 = lpResult.value;
-    const lpDebts = lpResult.karmicDebts;
-
-    const cleanDob = dobStr.replace(/-/g, '');
-    const allDigitsSum = cleanDob.split('').reduce((s, d) => s + parseInt(d, 10), 0);
-    const lp2 = reduceNumber(allDigitsSum, true);
+    const parts = dobStr.trim().split(/[-/]/);
+    const yearDigitsSum = parts[0].split('').reduce((s, d) => s + parseInt(d, 10), 0);
+    const componentDebts = [
+        parseInt(parts[1], 10),
+        parseInt(parts[2], 10),
+        yearDigitsSum,
+        lifePathResult.totalSum
+    ].filter(value => KARMIC_DEBT_NUMBERS.includes(value));
+    const karmicDebts = [...new Set(componentDebts)];
 
     return {
-        lifePath: lp1,
-        lifePathMethod1: lp1,
-        lifePathMethod2: lp2,
-        rawSum: total,
-        allDigitsSum: allDigitsSum,
-        hasMaster: [11, 22, 33].includes(lp1) || [11, 22, 33].includes(lp2),
-        hasDebt: lpDebts.length > 0,
-        karmicDebts: lpDebts
+        lifePath: lifePathResult.lifePath,
+        lifePathMethod1: lifePathResult.lifePath,
+        lifePathMethod2: lifePathResult.lifePath,
+        rawSum: lifePathResult.totalSum,
+        allDigitsSum: lifePathResult.totalSum,
+        hasMaster: lifePathResult.isMaster,
+        hasDebt: karmicDebts.length > 0,
+        karmicDebts
     };
 }
 
 export function calculateNameNumbersRuleEngine(fullName: string): RuleEngineNameNumbersResult {
-    const normalized = stripAccents(fullName);
-    const words = normalized.split(/\s+/).filter(Boolean);
+    const words = fullName.trim().split(/\s+/).filter(Boolean);
 
     let expressionSum = 0;
     let soulSum = 0;
@@ -1946,10 +1919,7 @@ export function calculateCyclesPinnacles(dobStr: string, lp: number): CyclesPinn
     const age2 = age1 + 9;
     const age3 = age2 + 9;
 
-    const c1 = Math.abs(monthVal - dayVal);
-    const c2 = Math.abs(dayVal - yearVal);
-    const c3 = Math.abs(c1 - c2);
-    const c4 = Math.abs(monthVal - yearVal);
+    const challenges = calculateChallenges(dobStr);
 
     return {
         cycles: { first: monthVal, second: dayVal, third: yearVal },
@@ -1959,17 +1929,32 @@ export function calculateCyclesPinnacles(dobStr: string, lp: number): CyclesPinn
             { num: 3, val: p3, age: age3 },
             { num: 4, val: p4, age: `${age3}+` }
         ],
-        challenges: [
-            { num: 1, val: c1 },
-            { num: 2, val: c2 },
-            { num: 3, val: c3 },
-            { num: 4, val: c4 }
-        ]
+        challenges
     };
 }
 
 export function calculateMaturityNumber(lifePath: number, expression: number): number {
     return reduceNumber(lifePath + expression, true);
+}
+
+/** Tính 4 con số thử thách từ cùng ba chu kỳ dùng để tính đỉnh cao. */
+export function calculateChallenges(dobStr: string): ChallengeStep[] {
+    const parts = dobStr.trim().split(/[-/]/);
+    if (parts.length !== 3) return [];
+
+    const month = reduceNumber(parseInt(parts[1], 10) || 0, false);
+    const day = reduceNumber(parseInt(parts[2], 10) || 0, false);
+    const yearDigitsSum = parts[0].split('').reduce((sum, digit) => sum + parseInt(digit, 10), 0);
+    const year = reduceNumber(yearDigitsSum, false);
+    const first = Math.abs(month - day);
+    const second = Math.abs(day - year);
+
+    return [
+        { num: 1, val: first },
+        { num: 2, val: second },
+        { num: 3, val: Math.abs(first - second) },
+        { num: 4, val: Math.abs(month - year) }
+    ];
 }
 
 /**
@@ -1986,6 +1971,8 @@ export const RuleEngine = {
     calculateBodyMindSoul,
     calculateNameDetails,
     calculateCyclesPinnacles,
+    calculateChallenges,
+    calculateKarmicDebt,
     calculateMaturityNumber
 };
 

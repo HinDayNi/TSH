@@ -9,6 +9,7 @@ import { SpotlightGuide, GuideStep } from '@/components/shared/SpotlightGuide';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Toast } from '@/components/ui/Toast';
 import { Wand2, Compass } from 'lucide-react';
+import { PremiumGate } from '@/components/shared/PremiumGate';
 
 const NAMING_GUIDE_STEPS: GuideStep[] = [
     {
@@ -217,6 +218,14 @@ export default function NamingPage() {
                     />
                 )}
             </div>
+
+            <PremiumGate
+                title="Gợi ý tối ưu tên nâng cao"
+                description="Mở khóa đối chiếu sâu giữa tên, nợ nghiệp, ngũ hành và mục tiêu phát triển cá nhân."
+            >
+                <h3 className="font-serif text-xl font-bold">Bộ lọc tên theo mục tiêu dài hạn</h3>
+                <p className="mt-3 text-sm">Cân bằng âm tiết, chỉ số thiếu và mức tương thích gia đình.</p>
+            </PremiumGate>
 
             {/* In-app Toast Feedback */}
             <Toast

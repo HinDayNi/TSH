@@ -15,7 +15,8 @@ import {
 } from '@/lib/numerology/calculator';
 import { convertLunarToSolar } from '@/lib/numerology/lunar';
 import { verifyVipAccessToken } from '@/lib/auth/vipToken';
-import { ReportActions, VipCtaButton } from '@/components/features/report/ReportActions';
+import { ReportActions, VipCtaButton, PdfReportData } from '@/components/features/report/ReportActions';
+import { PremiumGate } from '@/components/shared/PremiumGate';
 
 // ----------------------------------------------------------------------
 // 1. Data Loader từ Gói 1 (data/interpretations.json)
@@ -475,6 +476,23 @@ function BlockThreeVip({
                         {personalYear.forecast}
                     </p>
                 </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+                    <PremiumGate
+                        title="Dự báo chi tiết 12 tháng"
+                        description="Theo dõi từng tháng cá nhân, điểm thuận lợi và thời điểm cần chủ động cân bằng."
+                    >
+                        <h3 className="font-serif text-lg font-bold">Lịch năng lượng 12 tháng</h3>
+                        <p className="mt-3 text-sm">Tháng 1: Khởi động • Tháng 2: Kết nối • Tháng 3: Bứt phá</p>
+                    </PremiumGate>
+                    <PremiumGate
+                        title="Bài học Nợ nghiệp"
+                        description="Giải thích sâu các mốc 13/4, 14/5, 16/7 hoặc 19/1 và cách chuyển hóa thành năng lực."
+                    >
+                        <h3 className="font-serif text-lg font-bold">Bản đồ bài học cá nhân</h3>
+                        <p className="mt-3 text-sm">Nhận diện mô thức lặp lại và kế hoạch rèn luyện phù hợp.</p>
+                    </PremiumGate>
+                </div>
             </div>
 
             {/* Lớp phủ Khóa & Call-To-Action */}
@@ -578,6 +596,20 @@ export default async function ReportPage({
 
     // Đọc dữ liệu diễn giải từ Gói 1
     const interp = await getInterpretationData(lp.lifePath);
+    const pdfData: PdfReportData = {
+        vipToken: vipTokenParam,
+        name,
+        dob: rawDob,
+        lifePath: lp.lifePath,
+        expression: nameAnalysis.expressionNumber,
+        soulUrge: nameAnalysis.soulUrgeNumber,
+        personality: nameAnalysis.personalityNumber,
+        personalYear: personalYear.personalYear,
+        matrix: chart.matrix3x3,
+        overview: interp?.detailed_analysis.mindset || 'Bản tổng hợp năng lượng cá nhân dựa trên các chỉ số cốt lõi.',
+        strengths: interp?.detailed_analysis.strengths || [],
+        pinnacles: pinnacles.pinnacles.map(({ value, ageRange }) => ({ value, ageRange }))
+    };
 
     return (
         <main className="min-h-screen bg-[#F8F7F4] text-[#1C1B22] py-8 antialiased selection:bg-[#5146A5] selection:text-white">
@@ -593,7 +625,7 @@ export default async function ReportPage({
                         </span>
                     </div>
 
-                    <ReportActions isVip={isVip} />
+                    <ReportActions isVip={isVip} pdfData={pdfData} />
                 </div>
 
                 {/* Khối 1: Con số Chủ đạo, Ma trận ngày sinh, Luận giải học thuật */}
