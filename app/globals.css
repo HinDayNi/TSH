@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-canvas: #F8F7F4;
+    --surface: #FFFFFF;
+    --surface-secondary: #F1EFFA;
+    --primary: #5146A5;
+    --primary-hover: #443A8C;
+    --gold: #C59B45;
+    --gold-light: #EFE2C2;
+    --text-primary: #1C1B22;
+    --text-secondary: #706E78;
+    --border: #E7E4DD;
+    --success: #547A67;
+    --warning: #C59B45;
+    --error: #B45A58;
+    --ease-zen: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Container System Tokens */
+    --content-max-width: 1400px;
+    --content-padding-desktop: 48px;
+    --content-padding-tablet: 32px;
+    --content-padding-mobile: 20px;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: #F8F7F4;
+  }
+
+  body {
+    background-color: #F8F7F4;
+    color: #1C1B22;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    line-height: 1.65;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #1C1B22;
+    font-family: 'Fraunces', 'DM Serif Display', Georgia, serif;
+    letter-spacing: -0.015em;
+  }
+}
+
+/* Container & Layout Utilities */
+@layer components {
+  .page-container {
+    width: 100%;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  @media (min-width: 640px) {
+    .page-container {
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .page-container {
+      padding-left: 48px;
+      padding-right: 48px;
+    }
+  }
+
+  .section-rhythm {
+    padding-top: 56px;
+    padding-bottom: 56px;
+  }
+
+  @media (min-width: 640px) {
+    .section-rhythm {
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-rhythm {
+      padding-top: 104px;
+      padding-bottom: 104px;
+    }
+  }
+}
+
+/* Micro-interactions & Motion Utilities */
+@layer utilities {
+  .transition-zen {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    transition-duration: 200ms;
+  }
+
+  .hover-lift {
+    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(81, 70, 165, 0.08);
+    border-color: #D3CEEE;
+  }
+
+  /* Skeleton Warm Pulse */
+  .skeleton-warm {
+    background: linear-gradient(
+      90deg,
+      #F8F7F4 0%,
+      #EFECE6 50%,
+      #F8F7F4 100%
+    );
+    background-size: 200% 100%;
+    animation: warmPulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes warmPulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom scrollbar for calm workspace */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E7E4DD;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D5D2CA;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thần Số Học Nhí - Nền Tảng Phân Tích Tiềm Năng Trẻ Em</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <!-- Top Scientific Disclaimer Banner -->
+    <div class="disclaimer-banner" id="disclaimerBanner">
+        <div class="disclaimer-content">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span><strong>Lưu ý khoa học:</strong> Thần số học là hệ thống diễn giải mang tính truyền thống và chiêm
+                nghiệm biểu tượng. Các kết quả phân tích không phải kết luận y khoa hay khoa học đã kiểm chứng và chỉ
+                dùng làm tư liệu tham khảo.</span>
+        </div>
+        <button class="close-disclaimer"
+            onclick="document.getElementById('disclaimerBanner').style.display='none'">&times;</button>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="navbar no-print">
+        <div class="navbar-container">
+            <div class="brand">
+                <div class="brand-icon"><i data-lucide="sparkles"></i></div>
+                <div>
+                    <span class="brand-name">Thần Số Học Nhí</span>
+                    <span class="brand-subtitle">Business Intelligence for Kids</span>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#dashboard" class="nav-link active" data-tab="dashboard">Dashboard</a>
+                <a href="#identity" class="nav-link" data-tab="identity">Bản Thể</a>
+                <a href="#timeline" class="nav-link" data-tab="timeline">Vận Trình</a>
+                <a href="#compatibility" class="nav-link" data-tab="compatibility">Liên Kết Gia Đình</a>
+                <a href="#naming" class="nav-link" data-tab="naming">AI Đặt Tên</a>
+                <a href="#compare" class="nav-link" data-tab="compare">So Sánh Tên</a>
+                <a href="#aireport" class="nav-link" data-tab="aireport">Báo Cáo AI</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn-print" onclick="window.print()" title="Xuất báo cáo PDF / In trang">
+                    PDF
+                </button>
+                <button class="theme-toggle" id="themeToggle" title="Chuyển đổi giao diện Sáng/Tối">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-layout">
+        <!-- Input Form Section (Left Side) - Hidden during print -->
+        <aside class="form-section no-print">
+            <div class="glass-card form-card">
+                <div class="card-header">
+                    <h2>Dữ Liệu Đầu Vào</h2>
+                    <p class="card-subtitle">Nhập thông tin bé để kích hoạt hệ thống phân tích</p>
+                </div>
+
+                <form id="numerologyForm" onsubmit="event.preventDefault(); calculateNumerology();">
+                    <div class="form-group">
+                        <label for="lastName">Họ của bé <span class="required">*</span></label>
+                        <input type="text" id="lastName" placeholder="Ví dụ: Phan" required value="Phan">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="middleName">Tên đệm (nếu có)</label>
+                        <input type="text" id="middleName" placeholder="Ví dụ: Minh Khuê" value="Minh Khuê">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firstName">Tên khai sinh (để trống để tự động gợi ý tên phù hợp)</label>
+                        <input type="text" id="firstName" placeholder="Ví dụ: Anh (hoặc để trống)" value="Anh">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dob">Ngày sinh <span class="required">*</span></label>
+                            <input type="date" id="dob" required value="2026-06-17">
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Giới tính</label>
+                            <select id="gender">
+                                <option value="Nữ" selected>Nữ</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="homeName">Tên ở nhà</label>
+                            <input type="text" id="homeName" placeholder="Ví dụ: Miu" value="Miu">
+                        </div>
+                        <div class="form-group">
+                            <label for="birthPlace">Nơi sinh</label>
+                            <input type="text" id="birthPlace" placeholder="Ví dụ: Hà Nội" value="Hà Nội">
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+                    <h3 class="subsection-title">Dữ liệu cha mẹ (không bắt buộc)</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fatherName">Tên bố</label>
+                            <input type="text" id="fatherName" placeholder="Ví dụ: Phan Anh Tuấn" value="Phan Anh Tuấn">
+                        </div>
+                        <div class="form-group">
+                            <label for="fatherDob">Ngày sinh bố</label>
+                            <input type="date" id="fatherDob" value="1992-05-12">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="motherName">Tên mẹ</label>
+                            <input type="text" id="motherName" placeholder="Ví dụ: Nguyễn Thị Mai"
+                                value="Nguyễn Thị Mai">
+                        </div>
+                        <div class="form-group">
+                            <label for="motherDob">Ngày sinh mẹ</label>
+                            <input type="date" id="motherDob" value="1994-08-20">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="calculateBtn">
+                        <span>Phân Tích Dữ Liệu</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Result Dashboard Section (Right Side) -->
+        <section class="results-section">
+            <!-- TAB 0: DASHBOARD -->
+            <div class="tab-content active" id="tab-dashboard">
+                <!-- Bento Grid Overview Cards -->
+                <div class="bento-grid">
+                    <!-- Life Path Card -->
+                    <div class="bento-card span-2 highlight-card">
+                        <div class="bento-header">
+                            <span class="badge badge-purple"><i class="fa-solid fa-road"></i> Đường Đời (Life
+                                Path)</span>
+                            <span class="tooltip-trigger"
+                                data-tooltip="Con số chủ đạo thể hiện thiên hướng tính cách, thế mạnh và hành trình phát triển lớn nhất của con."><i
+                                    class="fa-regular fa-circle-question"></i></span>
+                        </div>
+                        <div class="bento-body">
+                            <div class="lp-display">
+                                <div class="lp-number" id="val-life-path">6</div>
+                                <div class="lp-text">
+                                    <h3 class="text-pastel-purple" id="val-life-path-title">Đường Đời 6: Kiến Tạo Tổ Ấm
+                                        & Tình Thương</h3>
+                                    <p id="val-life-path-desc">Con sinh ra sở hữu trái tim ấm áp, đầy ắp yêu thương và
+                                        khả năng chăm sóc xuất sắc. Bé phản ứng nhạy bén với không gian nghệ thuật, gia
+                                        đình.</p>
+                                </div>
+                            </div>
+                            <!-- Custom Progress bar -->
+                            <div class="card-progress-container">
+                                <span class="text-xs text-muted">Mức độ phát triển</span>
+                                <div class="progress-bar-wrap">
+                                    <div class="progress-bar-fill bg-pastel-purple" id="val-life-path-bar"
+                                        style="width: 60%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expression Card -->
+                    <div class="bento-card card-glow-pink">
+                        <div class="bento-header">
+                            <span class="text-pastel-pink"><i class="fa-solid fa-compass"></i> Sứ Mệnh
+                                (Expression)</span>
+                            <span class="tooltip-trigger"
+                                data-tooltip="Biểu thị mục tiêu lớn nhất, năng lực làm việc tự nhiên để bé thành công."><i
+                                    class="fa-regular fa-circle-question"></i></span>
+                        </div>
+                        <div class="bento-body-center">
+                            <div class="bento-number text-pastel-pink" id="val-expression">8</div>
+                            <p class="bento-desc-short" id="val-expression-title">Khả năng tự chủ & tổ chức</p>
+                            <div class="progress-bar-wrap margin-top-sm" style="width: 80%; height: 4px;">
+                                <div class="progress-bar-fill bg-pastel-pink" id="val-expression-bar"
+                                    style="width: 80%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Soul Urge Card -->
+                    <div class="bento-card card-glow-blue">
+                        <div class="bento-header">
+                            <span class="text-pastel-blue"><i class="fa-solid fa-heart"></i> Linh Hồn (Soul Urge)</span>
+                            <span class="tooltip-trigger"
+                                data-tooltip="Khao khát thầm kín bên trong, điều khiến con thấy thực sự hạnh phúc."><i
+                                    class="fa-regular fa-circle-question"></i></span>
+                        </div>
+                        <div class="bento-body-center">
+                            <div class="bento-number text-pastel-blue" id="val-soul-urge">3</div>
+                            <p class="bento-desc-short" id="val-soul-urge-title">Khao khát bày tỏ & giao tiếp</p>
+                            <div class="progress-bar-wrap margin-top-sm" style="width: 80%; height: 4px;">
+                                <div class="progress-bar-fill bg-pastel-blue" id="val-soul-urge-bar"
+                                    style="width: 30%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personality Card -->
+                    <div class="bento-card card-glow-green">
+                        <div class="bento-header">
+                            <span class="text-pastel-green"><i class="fa-solid fa-user-astronaut"></i> Nhân Cách</span>
+                            <span class="tooltip-trigger"
+                                data-tooltip="Giao diện bên ngoài, ấn tượng đầu tiên bé mang lại cho mọi người."><i
+                                    class="fa-regular fa-circle-question"></i></span>
+                        </div>
+                        <div class="bento-body-center">
+                            <div class="bento-number text-pastel-green" id="val-personality">5</div>
+                            <p class="bento-desc-short" id="val-personality-title">Năng động & ưa tự do</p>
+                            <div class="progress-bar-wrap margin-top-sm" style="width: 80%; height: 4px;">
+                                <div class="progress-bar-fill bg-pastel-green" id="val-personality-bar"
+                                    style="width: 50%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Day of Birth Card -->
+                    <div class="bento-card card-glow-yellow">
+                        <div class="bento-header">
+                            <span class="text-pastel-yellow"><i class="fa-solid fa-gift"></i> Ngày Sinh</span>
+                            <span class="tooltip-trigger" data-tooltip="Năng khiếu đặc biệt của con từ khi sinh ra."><i
+                                    class="fa-regular fa-circle-question"></i></span>
+                        </div>
+                        <div class="bento-body-center">
+                            <div class="bento-number text-pastel-yellow" id="val-day-of-birth">8</div>
+                            <p class="bento-desc-short" id="val-day-of-birth-title">Độc lập & ý chí sắt đá</p>
+                            <div class="progress-bar-wrap margin-top-sm" style="width: 80%; height: 4px;">
+                                <div class="progress-bar-fill bg-pastel-yellow" id="val-day-of-birth-bar"
+                                    style="width: 80%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attitude Card -->
+                    <div class="bento-card card-glow-orange">
+                        <div class="bento-header">
+                            <span class="text-pastel-orange"><i class="fa-solid fa-face-smile"></i> Thái Độ</span>
+                            <span class="tooltip-trigger"
+                                data-tooltip="Thái độ phản ứng tự nhiên ban đầu khi đối mặt sự việc mới."><i
+                                    class="fa-regular fa-circle-question"></i></span>
+                        </div>
+                        <div class="bento-body-center">
+                            <div class="bento-number text-pastel-orange" id="val-attitude">5</div>
+                            <p class="bento-desc-short" id="val-attitude-title">Linh hoạt, nhạy thích ứng</p>
+                            <div class="progress-bar-wrap margin-top-sm" style="width: 80%; height: 4px;">
+                                <div class="progress-bar-fill bg-pastel-orange" id="val-attitude-bar"
+                                    style="width: 50%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Year Card -->
+                    <div class="bento-card">
+                        <div class="bento-header">
+                            <span><i class="fa-solid fa-clock"></i> Năm Cá Nhân (2026)</span>
+                        </div>
+                        <div class="bento-body-center">
+                            <div class="bento-number" id="val-personal-year">9</div>
+                            <p class="bento-desc-short" id="val-personal-year-title">Kết thúc chu kỳ cũ, gieo hạt mới
+                            </p>
+                            <div class="progress-bar-wrap margin-top-sm" style="width: 80%; height: 4px;">
+                                <div class="progress-bar-fill" id="val-personal-year-bar" style="width: 90%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Wheel Chart of Core Indicators -->
+                    <div class="bento-card span-2 text-card">
+                        <div class="bento-header">
+                            <span><i class="fa-solid fa-circle-notch"></i> Vòng Tròn Tích Hợp Chỉ Số (Core Wheel)</span>
+                        </div>
+                        <div class="bento-body grid-2col gap-md">
+                            <div class="chart-container">
+                                <svg width="150" height="150" viewBox="0 0 100 100" id="coreWheelChart">
+                                    <!-- Dynamic SVG Rings drawn by JS -->
+                                </svg>
+                            </div>
+                            <div class="wheel-legend-list text-xs flex-center-y">
+                                <div>
+                                    <div class="legend-item"><span class="legend-color bg-pastel-purple"></span> Đường
+                                        đời: <strong id="wheel-val-lp">6</strong></div>
+                                    <div class="legend-item"><span class="legend-color bg-pastel-pink"></span> Sứ mệnh:
+                                        <strong id="wheel-val-exp">8</strong></div>
+                                    <div class="legend-item"><span class="legend-color bg-pastel-blue"></span> Linh hồn:
+                                        <strong id="wheel-val-soul">3</strong></div>
+                                    <div class="legend-item"><span class="legend-color bg-pastel-green"></span> Nhân
+                                        cách: <strong id="wheel-val-per">5</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nhịp Sinh Học Hôm Nay -->
+                    <div class="bento-card span-2 text-card">
+                        <div class="bento-header">
+                            <span><i class="fa-solid fa-heartpulse"></i> Chỉ Số Nhịp Năng Lượng Trong Tháng</span>
+                        </div>
+                        <div class="bento-body">
+                            <div class="row-flex">
+                                <div class="sub-col">
+                                    <span class="sub-label">Tháng Cá Nhân</span>
+                                    <div class="sub-value text-pastel-purple animate-pulse" id="val-personal-month">7
+                                    </div>
+                                    <p class="sub-desc" id="val-personal-month-desc">Tháng của chiều sâu trí tuệ, đọc
+                                        sách.</p>
+                                </div>
+                                <div class="sub-col border-left">
+                                    <span class="sub-label">Ngày Cá Nhân</span>
+                                    <div class="sub-value text-pastel-blue" id="val-personal-day">2</div>
+                                    <p class="sub-desc" id="val-personal-day-desc">Ngày của yêu thương kết nối ấm áp.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Karmic Debt Warning Card -->
+                    <div class="bento-card span-2 text-card" id="karmic-debt-bento-card">
+                        <div class="bento-header">
+                            <span><i class="fa-solid fa-triangle-exclamation" style="color: #f97316;"></i> Cảnh Báo Nợ Nghiệp (Karmic Debt)</span>
+                        </div>
+                        <div class="bento-body" id="karmic-debt-display">
+                            <p class="text-sm" style="color: var(--text-muted);">Đang kiểm tra...</p>
+                        </div>
+                    </div>
+
+                    <!-- Life Path Compatibility -->
+                    <div class="bento-card span-2 text-card">
+                        <div class="bento-header">
+                            <span><i class="fa-solid fa-heart-pulse text-pastel-pink"></i> Tương Hợp Đường Đời - Chỉ Số Hạnh Phúc & Thách Thức</span>
+                        </div>
+                        <div class="bento-body">
+                            <div id="compat-lp-display">
+                                <p class="text-sm" style="color: var(--text-muted);">Đang phân tích...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 1: BẢN THỂ (IDENTITY) -->
+            <div class="tab-content" id="tab-identity">
+                <div class="section-title-wrap">
+                    <h2><i class="fa-solid fa-dna text-pastel-pink"></i> Bản Thể Thần Số Học (Thân - Tâm - Trí)</h2>
+                    <p>Phân tích tỉ lệ vật chất, tâm hồn và tư duy sáng tạo của bé</p>
+                </div>
+
+                <div class="quick-insight-strip">
+                    <div class="insight-chip">
+                        <span class="chip-label">Số khuyết chính</span>
+                        <strong id="identity-missing-main">Chưa có dữ liệu</strong>
+                    </div>
+                    <div class="insight-chip">
+                        <span class="chip-label">Mũi tên nổi bật</span>
+                        <strong id="identity-arrow-main">Chưa có dữ liệu</strong>
+                    </div>
+                    <div class="insight-chip">
+                        <span class="chip-label">Độ cân bằng Thân-Tâm-Trí</span>
+                        <strong id="identity-balance-main">Chưa có dữ liệu</strong>
+                    </div>
+                </div>
+
+                <div class="grid-2col">
+                    <!-- Pie Chart for Than Tam Tri -->
+                    <div class="glass-card">
+                        <h3>Tỷ lệ Thân - Tâm - Trí (%)</h3>
+                        <p class="card-desc">Cơ chế quy đổi phần trăm từ họ tên và ngày sinh</p>
+                        <div class="ttt-sliders-container" id="tttSliders">
+                            <!-- Dynamic sliders generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Heatmap Grid -->
+                    <div class="glass-card">
+                        <h3>Bản Đồ Nhiệt Năng Lượng (Energy Heatmap)</h3>
+                        <p class="card-desc">Tần suất và mật độ năng lượng từ 1 đến 9 của trẻ</p>
+                        <div class="heatmap-wrapper" id="energyHeatmap">
+                            <!-- 3x3 Heatmap Grid generated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Frequency Bar Chart -->
+                <div class="glass-card">
+                    <h3>Biểu Đồ Cột Tần Suất Số (Frequency Bar Chart)</h3>
+                    <p class="card-desc">Thể hiện trực quan số lần xuất hiện của các con số trong hồ sơ</p>
+                    <div class="bar-chart-container" id="frequencyBarChart">
+                        <!-- Custom SVG Bar Chart -->
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Pythagorean Birth Grid and Arrows -->
+                <div class="glass-card">
+                    <h3>Biểu Đồ Sinh Học Pythagoras (Ngày Sinh & Họ Tên Riêng Biệt)</h3>
+                    <p class="card-desc">Hệ thống phân tách năng lượng Ngày sinh gốc (bên trái) và Họ tên bổ trợ (bên phải) để so sánh trực quan.</p>
+
+                    <div class="grid-layout-pitago">
+                        <!-- Two Grids Row -->
+                        <div class="grids-row-container">
+                            <!-- DOB Grid Wrapper -->
+                            <div class="pitago-grid-wrapper">
+                                <h4 style="margin-bottom:8px; color:var(--primary);"><i class="fa-solid fa-calendar-days"></i> Biểu Đồ Ngày Sinh</h4>
+                                <div class="pitago-grid-container">
+                                    <div class="pitago-grid" id="dob-grid-body">
+                                        <div class="pitago-cell" id="dobcell-3"><span class="cell-num">3</span><span class="cell-count" id="dobcount-3"></span></div>
+                                        <div class="pitago-cell" id="dobcell-6"><span class="cell-num">6</span><span class="cell-count" id="dobcount-6"></span></div>
+                                        <div class="pitago-cell" id="dobcell-9"><span class="cell-num">9</span><span class="cell-count" id="dobcount-9"></span></div>
+                                        <div class="pitago-cell" id="dobcell-2"><span class="cell-num">2</span><span class="cell-count" id="dobcount-2"></span></div>
+                                        <div class="pitago-cell" id="dobcell-5"><span class="cell-num">5</span><span class="cell-count" id="dobcount-5"></span></div>
+                                        <div class="pitago-cell" id="dobcell-8"><span class="cell-num">8</span><span class="cell-count" id="dobcount-8"></span></div>
+                                        <div class="pitago-cell" id="dobcell-1"><span class="cell-num">1</span><span class="cell-count" id="dobcount-1"></span></div>
+                                        <div class="pitago-cell" id="dobcell-4"><span class="cell-num">4</span><span class="cell-count" id="dobcount-4"></span></div>
+                                        <div class="pitago-cell" id="dobcell-7"><span class="cell-num">7</span><span class="cell-count" id="dobcount-7"></span></div>
+                                    </div>
+                                    <svg class="pitago-arrows-overlay" viewBox="0 0 240 240" id="dobArrowsOverlay">
+                                        <!-- DOB arrows drawn dynamically -->
+                                    </svg>
+                                </div>
+                                <p class="note-text"><span class="color-dot dob-dot"></span> Bản thể gốc ban đầu</p>
+                            </div>
+
+                            <!-- Name Grid Wrapper -->
+                            <div class="pitago-grid-wrapper">
+                                <h4 style="margin-bottom:8px; color:var(--accent-pink);"><i class="fa-solid fa-signature"></i> Biểu Đồ Họ Tên</h4>
+                                <div class="pitago-grid-container">
+                                    <div class="pitago-grid" id="name-grid-body">
+                                        <div class="pitago-cell" id="namecell-3"><span class="cell-num">3</span><span class="cell-count" id="namecount-3"></span></div>
+                                        <div class="pitago-cell" id="namecell-6"><span class="cell-num">6</span><span class="cell-count" id="namecount-6"></span></div>
+                                        <div class="pitago-cell" id="namecell-9"><span class="cell-num">9</span><span class="cell-count" id="namecount-9"></span></div>
+                                        <div class="pitago-cell" id="namecell-2"><span class="cell-num">2</span><span class="cell-count" id="namecount-2"></span></div>
+                                        <div class="pitago-cell" id="namecell-5"><span class="cell-num">5</span><span class="cell-count" id="namecount-5"></span></div>
+                                        <div class="pitago-cell" id="namecell-8"><span class="cell-num">8</span><span class="cell-count" id="namecount-8"></span></div>
+                                        <div class="pitago-cell" id="namecell-1"><span class="cell-num">1</span><span class="cell-count" id="namecount-1"></span></div>
+                                        <div class="pitago-cell" id="namecell-4"><span class="cell-num">4</span><span class="cell-count" id="namecount-4"></span></div>
+                                        <div class="pitago-cell" id="namecell-7"><span class="cell-num">7</span><span class="cell-count" id="namecount-7"></span></div>
+                                    </div>
+                                    <svg class="pitago-arrows-overlay" viewBox="0 0 240 240" id="nameArrowsOverlay">
+                                        <!-- Name arrows drawn dynamically -->
+                                    </svg>
+                                </div>
+                                <p class="note-text"><span class="color-dot name-dot"></span> Sức mạnh bổ trợ từ tên gọi</p>
+                            </div>
+                        </div>
+
+                        <!-- Explanations & Suggestions Warning -->
+                        <div class="arrows-analysis-wrapper">
+                            <div id="blank-name-warning-panel" class="insight-mini-panel" style="display:none; margin-bottom:12px; border-color:var(--pastel-yellow);">
+                                <strong>💡 Chưa có tên chính cho bé</strong>
+                                <p class="text-xs text-muted" style="margin-top:4px;">Bạn mới chỉ nhập họ. Hãy bấm vào các tên gợi ý bên dưới để tự động bù vào các ô trống.</p>
+                            </div>
+                            <h4 class="sub-block-title">Mũi Tên Sức Mạnh & Mũi Tên Trống (Từ Ngày Sinh)</h4>
+                            <div id="arrows-list" class="flex-column gap-sm">
+                                <!-- Dynamic arrows list -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Golden Triangle (Tam Giác Vàng) -->
+                <div class="glass-card">
+                    <div class="flex-between">
+                        <h3>Sơ Đồ Tam Giác Vàng (Golden Triangle Layout)</h3>
+                        <span class="text-xs text-muted"><i class="fa-solid fa-magnifying-glass-plus"></i> Có thể Zoom /
+                            Di chuột xem giải thích</span>
+                    </div>
+                    <p class="card-desc">Sự kết hợp giữa 3 đỉnh cao: Đường đời (Life Path), Sứ mệnh (Expression) và Linh
+                        hồn (Soul Urge) để làm bệ đỡ cốt lõi.</p>
+
+                    <div class="golden-triangle-layout">
+                        <div class="triangle-svg-wrapper">
+                            <svg viewBox="0 0 100 100" id="goldenTriangleSvg" class="zoomable-svg">
+                                <!-- SVG Paths for Triangle and Vertices -->
+                            </svg>
+                        </div>
+                        <div class="triangle-explanation" id="triangleExplanationCard">
+                            <h4 class="text-pastel-purple" id="triangle-exp-title">Bấm vào các đỉnh để xem giải nghĩa
+                            </h4>
+                            <p id="triangle-exp-body" style="font-size: 0.85rem; color: var(--text-muted);">Mỗi đỉnh đại
+                                diện cho một nguồn năng lượng sống, định hình trục phát triển tiềm năng lớn nhất của
+                                con.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 8 Intelligences Radar Chart -->
+                <div class="glass-card">
+                    <h3>Khảo Sát Định Hướng Trí Thông Minh Đa Diện (Radar Chart)</h3>
+                    <p class="card-desc">Tương thích từ bộ số cá nhân sang 8 loại hình trí thông minh của Howard Gardner
+                    </p>
+                    <div class="grid-2col gap-lg align-center">
+                        <div class="radar-chart-container">
+                            <svg width="250" height="250" viewBox="0 0 100 100" id="intelligenceRadar">
+                                <!-- Dynamic Radar drawn by JS -->
+                            </svg>
+                        </div>
+                        <div>
+                            <h4>Khuyến nghị giáo dục</h4>
+                            <div class="parenting-tags" id="parenting-tags-container"></div>
+                            <p class="margin-top-md text-sm" id="parenting-detail-text"></p>
+                            <div class="insight-mini-panel margin-top-md">
+                                <h4>Năng lực trội theo Radar</h4>
+                                <div id="radarTopStrengths" class="score-pill-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Numerology Analysis Tabs (MODULE 1, 2, 4) -->
+                <div class="glass-card margin-top-lg">
+                    <h3><i class="fa-solid fa-list-check text-pastel-pink"></i> Luận Giải Chi Tiết Chỉ Số & Bản Đồ Số Học</h3>
+                    <p class="card-desc">Phân tích chi tiết ý nghĩa các con số cốt lõi, mật độ lặp và các ốc đảo cô đơn trên biểu đồ của con.</p>
+                    
+                    <div class="details-tabs-container">
+                        <div class="details-tab-headers" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                            <button class="details-tab-btn active" id="btn-core-meanings" onclick="switchDetailsSubTab('core-meanings')">📌 Ý Nghĩa Số Cốt Lõi</button>
+                            <button class="details-tab-btn" id="btn-density-logic" onclick="switchDetailsSubTab('density-logic')">📊 Mật Độ Số Lặp</button>
+                            <button class="details-tab-btn" id="btn-isolated-oases" onclick="switchDetailsSubTab('isolated-oases')">🏝️ Ốc Đảo Cô Đơn</button>
+                            <button class="details-tab-btn" id="btn-challenges" onclick="switchDetailsSubTab('challenges')">⚡ Thách Thức (0–8)</button>
+                            <button class="details-tab-btn" id="btn-maturity" onclick="switchDetailsSubTab('maturity')">🌳 Trưởng Thành</button>
+                            <button class="details-tab-btn" id="btn-rational-thought" onclick="switchDetailsSubTab('rational-thought')">🧠 Tư Duy Lý Trí</button>
+                        </div>
+                        
+                        <!-- Panel 1: Core Meanings -->
+                        <div class="details-tab-panel active" id="panel-core-meanings">
+                            <div class="grid-2col gap-md" id="details-core-meanings-container">
+                                <p class="text-sm text-muted">Nhập dữ liệu và bấm Phân tích để xem luận giải...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel 2: Density Logic -->
+                        <div class="details-tab-panel" id="panel-density-logic" style="display: none;">
+                            <div class="grid-2col gap-md" id="details-density-logic-container">
+                                <p class="text-sm text-muted">Nhập dữ liệu và bấm Phân tích để xem luận giải...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Panel 3: Isolated Oases -->
+                        <div class="details-tab-panel" id="panel-isolated-oases" style="display: none;">
+                            <div class="flex-column gap-sm" id="details-isolated-oases-container">
+                                <p class="text-sm text-muted">Nhập dữ liệu và bấm Phân tích để xem luận giải...</p>
+                            </div>
+                        </div>
+
+                        <!-- Panel 4: Challenges (MODULE 11) -->
+                        <div class="details-tab-panel" id="panel-challenges" style="display: none;">
+                            <p class="text-xs text-muted margin-bottom-sm">Chỉ số thách thức chạy từ 0 đến 8. Số 0 là trường hợp đặc biệt — thử thách của tự do ý chí.</p>
+                            <div class="flex-column gap-sm" id="details-challenges-container">
+                                <p class="text-sm text-muted">Nhập dữ liệu và bấm Phân tích để xem luận giải...</p>
+                            </div>
+                        </div>
+
+                        <!-- Panel 5: Maturity (MODULE 12) -->
+                        <div class="details-tab-panel" id="panel-maturity" style="display: none;">
+                            <p class="text-xs text-muted margin-bottom-sm">Năng lượng trưởng thành trỗi dậy mạnh mẽ sau tuổi 35 (Đường Đời + Sứ Mệnh).</p>
+                            <div id="details-maturity-container">
+                                <p class="text-sm text-muted">Nhập dữ liệu và bấm Phân tích để xem luận giải...</p>
+                            </div>
+                        </div>
+
+                        <!-- Panel 6: Rational Thought (MODULE 13) -->
+                        <div class="details-tab-panel" id="panel-rational-thought" style="display: none;">
+                            <p class="text-xs text-muted margin-bottom-sm">Cách thức bộ não phản tích thông tin và giải quyết khủng hoảng (Tháng sinh + Ngày sinh).</p>
+                            <div id="details-rational-thought-container">
+                                <p class="text-sm text-muted">Nhập dữ liệu và bấm Phân tích để xem luận giải...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: VẬN TRÌNH (TIMELINE) -->
+            <div class="tab-content" id="tab-timeline">
+                <div class="section-title-wrap">
+                    <h2><i class="fa-solid fa-route text-pastel-orange"></i> Vận Trình Cuộc Đời Con</h2>
+                    <p>Timeline chu kỳ cuộc đời và các mốc đỉnh cao quan trọng</p>
+                </div>
+
+                <div class="quick-insight-strip">
+                    <div class="insight-chip">
+                        <span class="chip-label">Trọng tâm hiện tại</span>
+                        <strong id="timeline-focus-main">Chưa có dữ liệu</strong>
+                    </div>
+                    <div class="insight-chip">
+                        <span class="chip-label">Mốc tuổi quan trọng</span>
+                        <strong id="timeline-age-main">Chưa có dữ liệu</strong>
+                    </div>
+                    <div class="insight-chip">
+                        <span class="chip-label">Thử thách cần lưu ý</span>
+                        <strong id="timeline-challenge-main">Chưa có dữ liệu</strong>
+                    </div>
+                </div>
+
+                <!-- Kim tự tháp cuộc đời (Pyramids of Life) -->
+                <div class="glass-card">
+                    <h3>Kim Tự Tháp Đỉnh Cao Cuộc Đời</h3>
+                    <p class="card-desc">Bấm vào từng tầng của Kim Tự Tháp để mở khóa luận giải chi tiết</p>
+                    <div class="pyramid-interactive-layout">
+                        <div class="pyramid-svg-wrapper">
+                            <svg viewBox="0 0 120 100" id="pinnaclesPyramidSvg">
+                                <!-- Interactive SVG pyramid levels will be created here -->
+                            </svg>
+                        </div>
+                        <div class="pyramid-explanation-card" id="pyramidDetailsCard">
+                            <h4 class="text-pastel-orange" id="pyramid-exp-title">Đỉnh cao Kim tự tháp</h4>
+                            <p id="pyramid-exp-body">Hãy bấm vào các điểm tròn đỉnh tháp bên trái để đọc ý nghĩa, cơ hội
+                                và thử thách của mỗi giai đoạn.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Life Timeline (Chu kỳ, đỉnh cao, thử thách kết hợp) -->
+                <div class="glass-card">
+                    <h3>Lịch Trình Vận Mệnh Chi Tiết (Life Timeline)</h3>
+                    <p class="card-desc">Một cái nhìn trực quan về dòng thời gian từ 0 tuổi tới hậu vận của bé</p>
+
+                    <div class="life-timeline-horizontal-wrapper">
+                        <div class="life-timeline-horizontal" id="horizontalTimeline">
+                            <!-- Horizontal timeline items containing age bubbles -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: LIÊN KẾT GIA ĐÌNH -->
+            <div class="tab-content" id="tab-compatibility">
+                <div class="section-title-wrap">
+                    <h2><i class="fa-solid fa-diagram-project text-pastel-blue"></i> Mối Tương Quan Gia Đình (Network
+                        Graph)</h2>
+                    <p>Mạng liên kết gia đình giúp bố mẹ thấu hiểu tâm lý và hỗ trợ bé tốt nhất</p>
+                </div>
+
+                <div class="quick-insight-strip">
+                    <div class="insight-chip">
+                        <span class="chip-label">Mức hòa hợp</span>
+                        <strong id="compat-quick-score">Chưa có dữ liệu</strong>
+                    </div>
+                    <div class="insight-chip">
+                        <span class="chip-label">Điểm mạnh chính</span>
+                        <strong id="compat-quick-positive">Chưa có dữ liệu</strong>
+                    </div>
+                    <div class="insight-chip">
+                        <span class="chip-label">Điểm cần cải thiện</span>
+                        <strong id="compat-quick-risk">Chưa có dữ liệu</strong>
+                    </div>
+                </div>
+
+                <div id="compatibility-available-section">
+                    <div class="grid-2col">
+                        <!-- Network Graph -->
+                        <div class="glass-card text-center">
+                            <h3>Biểu đồ Mạng Liên Kết Gia Đình</h3>
+                            <p class="card-desc">Sự tương thích được vẽ dưới dạng đồ thị liên kết</p>
+                            <div class="family-graph-container">
+                                <svg viewBox="0 0 100 100" id="familyNetworkGraph">
+                                    <!-- Ba -> Con <- Me Network nodes & edges -->
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Compatibility Score details -->
+                        <div class="glass-card text-center">
+                            <h3>Điểm Hòa Hợp Gia Đình</h3>
+                            <div class="score-display">
+                                <span class="score-num" id="compat-score">85</span>
+                                <span class="score-max">/100</span>
+                            </div>
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" id="compat-progress-bar" style="width: 85%;"></div>
+                            </div>
+                            <h4 class="margin-top-md" id="compat-level-title">Rất Tương Thích & Gắn Kết</h4>
+                            <p class="text-sm margin-top-sm" id="compat-intro-text"></p>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="grid-2col">
+                        <div class="glass-card card-alert-green">
+                            <h3><i class="fa-solid fa-heart-circle-check"></i> Điểm Hòa Hợp</h3>
+                            <ul class="bullet-list-checked" id="compat-harmony-list"></ul>
+                        </div>
+                        <div class="glass-card card-alert-orange">
+                            <h3><i class="fa-solid fa-heart-circle-exclamation"></i> Điểm Khác Biệt Cần Lưu Ý</h3>
+                            <ul class="bullet-list-warn" id="compat-conflict-list"></ul>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Feng Shui Bản Mệnh & Ngũ Hành Gia Đình -->
+                    <div class="glass-card">
+                        <h3><i class="fa-solid fa-yin-yang text-pastel-purple"></i> Phân Tích Mệnh & Phong Thủy Ngũ Hành Gia Đình</h3>
+                        <p class="card-desc">Đối chiếu bản mệnh theo năm sinh (Mệnh Niên) và ngũ hành tên gọi để tối ưu sinh khí hòa hợp gia đình.</p>
+                        
+                        <div class="grid-3col gap-sm margin-top-md" id="compat-fengshui-cards">
+                            <!-- Populated dynamically: Bố, Mẹ, Con cards -->
+                        </div>
+                        
+                        <div class="insight-mini-panel margin-top-md" id="compat-fengshui-analysis-content" style="line-height: 1.6; font-size: 0.9rem;">
+                            <!-- Populated dynamically with relationship text -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="compatibility-missing-section" class="glass-card text-center" style="display: none;">
+                    <i class="fa-solid fa-network-wired text-pastel-blue"
+                        style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h3>Chưa Có Đủ Thông Tin Cha Mẹ</h3>
+                    <p>Vui lòng bổ sung Tên và Ngày sinh của Bố/Mẹ ở khung biểu mẫu bên trái để kích hoạt biểu đồ mạng
+                        lưới gia đình.</p>
+                </div>
+            </div>
+
+            <!-- TAB 4: AI ĐẶT TÊN -->
+            <div class="tab-content" id="tab-naming">
+                <div class="section-title-wrap">
+                    <h2><i class="fa-solid fa-magic text-pastel-purple"></i> AI Gợi Ý Tên & Chấm Điểm Cho Họ <span id="naming-family-name" class="dynamic-highlight"></span></h2>
+                    <p>Tìm kiếm tên khai sinh và tên ở nhà tối ưu nhất để bù đắp các góc khuyết sinh học của con</p>
+                </div>
+
+                <div class="score-guide-strip">
+                    <div class="score-guide-item"><span class="guide-dot guide-dot-gold"></span> 90-100: Ưu tiên cao nhất (đề xuất chính)</div>
+                    <div class="score-guide-item"><span class="guide-dot guide-dot-blue"></span> 70-89: Tốt, có thể chọn ngay</div>
+                    <div class="score-guide-item"><span class="guide-dot guide-dot-sky"></span> 50-69: Cần cân nhắc thêm</div>
+                    <div class="score-guide-item"><span class="guide-dot guide-dot-gray"></span> Dưới 50: Không khuyến nghị</div>
+                </div>
+
+                <div class="glass-card">
+                    <h3>Cấu Hình Mong Muốn Đặt Tên</h3>
+                    <div class="naming-config-grid">
+                        <div class="form-group">
+                            <label for="namingWish">Thiên hướng ước nguyện cho bé</label>
+                            <select id="namingWish">
+                                <option value="Bình an & Nhân hậu" selected>Bình an & Nhân hậu</option>
+                                <option value="Thông minh & Tài lộc">Thông minh & Tài lộc</option>
+                                <option value="Lãnh đạo & Thành công">Lãnh đạo & Thành công</option>
+                                <option value="Sức khỏe & Tự do">Sức khỏe & Tự do</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="namingTotal">Số lượng tên gợi ý</label>
+                            <select id="namingTotal">
+                                <option value="10">Top 10 Tên tối ưu</option>
+                                <option value="20" selected>Top 20 Tên tối ưu</option>
+                                <option value="50">Top 50 Tên tối ưu</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn-primary" onclick="generateAINames()"><i
+                                    class="fa-solid fa-wand-magic-sparkles"></i> Gợi Ý & Chấm Điểm</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Gender Filter + Count Info -->
+                <div class="naming-filter-bar">
+                    <div class="naming-filter-group">
+                        <button class="naming-filter-btn active" data-gf="all" onclick="generateAINames('all')">⭐ Tất cả</button>
+                        <button class="naming-filter-btn" data-gf="Nam" onclick="generateAINames('Nam')">👦 Nam</button>
+                        <button class="naming-filter-btn" data-gf="Nữ" onclick="generateAINames('Nữ')">👧 Nữ</button>
+                    </div>
+                    <span class="naming-filter-info" id="namingFilterInfo"></span>
+                </div>
+
+                <!-- Suggested Names Cards Grid -->
+                <div class="naming-results-section">
+                    <h3>Danh Sách Tên Được AI Đề Xuất (Phân tích 100 điểm)</h3>
+                    <div class="name-cards-grid-v2" id="aiNameCardsContainer">
+                        <!-- Dynamic Premium Cards with Breakdown -->
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Suggested Home Names -->
+                <div class="glass-card">
+                    <h3>Gợi Ý Tên Ở Nhà Bổ Khuyết</h3>
+                    <p class="card-desc">Gợi ý các biệt danh xinh xắn giúp bù đắp năng lượng thiếu hụt trong ngày sinh
+                        gốc của bé.</p>
+                    <div class="home-names-grid" id="home-names-suggestions"></div>
+                </div>
+
+                <!-- Home Name Energy Analysis -->
+                <div class="glass-card" id="home-name-energy-section" style="display:none; border-left: 4px solid var(--pastel-purple);">
+                    <h3>⚡ Năng Lượng Tên Ở Nhà &amp; Tương Tác Gia Đình</h3>
+                    <p class="card-desc">Tên được gọi hằng ngày trong gia đình tạo ra một <strong>luồng năng lượng thứ cấp</strong> ảnh hưởng đến tính cách của bé khi ở nhà.</p>
+                    <div id="home-name-energy-content"></div>
+                </div>
+            </div>
+
+
+            <!-- TAB 5: SO SÁNH TÊN -->
+            <div class="tab-content" id="tab-compare">
+                <div class="section-title-wrap">
+                    <h2><i class="fa-solid fa-scale-balanced text-pastel-green"></i> So Sánh Nhiều Tên Cho Họ <span id="compare-family-name" class="dynamic-highlight"></span></h2>
+                    <p>So sánh trực quan các tên để tìm ra cái tên bổ trợ tốt nhất cho bé</p>
+                </div>
+
+                <div class="quick-insight-strip">
+                    <div class="insight-chip">
+                        <span class="chip-label">Khoảng cách Top 1 - Top 2</span>
+                        <strong id="compare-gap-main">Chưa có dữ liệu</strong>
+                    </div>
+                    <div class="insight-chip">
+                        <span class="chip-label">Tên bù khuyết tốt nhất</span>
+                        <strong id="compare-fill-main">Chưa có dữ liệu</strong>
+                    </div>
+                    <div class="insight-chip">
+                        <span class="chip-label">Độ chắc chắn đề xuất</span>
+                        <strong id="compare-confidence-main">Chưa có dữ liệu</strong>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h3>Nhập Tối Đa 5 Tên Cần Đối Chiếu</h3>
+                    <div class="compare-inputs-grid">
+                        <div class="compare-inputs-row">
+                            <input type="text" id="compareName1" class="compare-input" placeholder="Tên 1"
+                                value="Minh Anh">
+                            <input type="text" id="compareName2" class="compare-input" placeholder="Tên 2"
+                                value="Khánh Vy">
+                            <input type="text" id="compareName3" class="compare-input" placeholder="Tên 3"
+                                value="Gia Bảo">
+                            <input type="text" id="compareName4" class="compare-input" placeholder="Tên 4"
+                                value="Bình An">
+                            <input type="text" id="compareName5" class="compare-input"
+                                placeholder="Tên 5 (không bắt buộc)">
+                        </div>
+                        <button class="btn-primary margin-top-md" onclick="compareNames()"><i
+                                class="fa-solid fa-code-compare"></i> Chấm Điểm Đối Chiếu</button>
+                    </div>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- Comparison charts and Scorecards -->
+                <div class="comparison-charts-layout" id="comparisonChartsSection" style="display: none;">
+                    <div class="grid-2col">
+                        <!-- Bar chart comparison -->
+                        <div class="glass-card">
+                            <h3>Biểu đồ Cột So Sánh Điểm Số</h3>
+                            <div class="chart-container" id="compareBarChartContainer">
+                                <!-- Drawn by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Comparison Winner Card -->
+                        <div class="glass-card text-center flex-column justify-center align-center">
+                            <h3 class="text-pastel-green"><i class="fa-solid fa-trophy"></i> Tên Khuyên Dùng Nhất</h3>
+                            <div class="winner-score-badge margin-top-md">
+                                <span class="winner-name-lbl" id="compWinnerName">Minh Anh</span>
+                                <span class="winner-score-lbl" id="compWinnerScore">98/100</span>
+                            </div>
+                            <p class="text-sm margin-top-md" id="compare-winner-text"></p>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <!-- Detail Score Matrix Table -->
+                    <div class="glass-card">
+                        <h3>Bảng Chấm Điểm Đối Chiếu Chi Tiết</h3>
+                        <div class="table-responsive">
+                            <table class="premium-table compare-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tiêu Chí So Sánh</th>
+                                        <th id="comp-h-1">Tên 1</th>
+                                        <th id="comp-h-2">Tên 2</th>
+                                        <th id="comp-h-3">Tên 3</th>
+                                        <th id="comp-h-4">Tên 4</th>
+                                        <th id="comp-h-5" style="display: none;">Tên 5</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="compare-matrix-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: BÁO CÁO AI -->
+            <div class="tab-content" id="tab-aireport">
+                <div class="section-title-wrap">
+                    <h2><i class="fa-solid fa-file-lines text-pastel-purple"></i> Báo Cáo Thần Số Học Toàn Diện</h2>
+                    <p>Tổng hợp toàn bộ phân tích thần số học dưới dạng báo cáo chi tiết, có thể in và lưu trữ</p>
+                </div>
+
+                <div class="glass-card" style="text-align: center; padding: 24px 16px;" id="aiReportPlaceholder">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 3rem; color: var(--primary); margin-bottom: 16px; display: block;"></i>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Nhập thông tin bé và bấm Phân Tích để tạo báo cáo đầy đủ</p>
+                </div>
+
+                <div id="aiReportContent" style="display: none;" class="premium-report-page">
+                    <!-- Report Header -->
+                    <div class="report-header-premium">
+                        <button class="btn-primary no-print" onclick="window.print()" style="position: absolute; right: 24px; top: 24px;">
+                            <i class="fa-solid fa-print"></i> In / Xuất PDF
+                        </button>
+                        <div class="report-branding">
+                            <i class="fa-solid fa-star-and-crescent text-pastel-purple"></i> Báo Cáo Thần Số Học Chuyên Sâu
+                        </div>
+                        <h3 id="report-child-name" class="report-title"></h3>
+                        <p id="report-child-meta" class="report-meta"></p>
+                    </div>
+
+                    <div class="report-body">
+                        <!-- Core Numbers -->
+                        <div class="report-section">
+                            <h3 class="section-title">1. Các Chỉ Số Cốt Lõi</h3>
+                            <div class="report-grid-4col" id="report-core-numbers"></div>
+                        </div>
+
+                        <!-- 2-column layout for Analysis + Grid -->
+                        <div class="report-grid-2col">
+                            <div class="report-col">
+                                <div class="report-section h-100">
+                                    <h3 class="section-title">2. Phân Tích Đường Đời</h3>
+                                    <div id="report-life-path-analysis" class="report-text-content"></div>
+                                    
+                                    <h3 class="section-title" style="margin-top: 24px;">3. Tỷ Lệ Thân - Tâm - Trí</h3>
+                                    <div id="report-ttt-sliders" class="ttt-sliders-container">
+                                        <!-- Dynamic slides cloned here -->
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="report-col">
+                                <div class="report-section h-100">
+                                    <h3 class="section-title">4. Bản Đồ Sinh Học Pythagoras (Ngày Sinh & Tên)</h3>
+                                    <div class="report-pitago-visual text-center margin-top-md" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                                        <!-- DOB Grid in Report -->
+                                        <div class="pitago-grid-wrapper" style="transform: scale(0.75); transform-origin: top center; width: 180px;">
+                                            <h4 class="text-sm" style="color: var(--primary); margin-bottom: 5px;">Biểu Đồ Ngày Sinh</h4>
+                                            <div class="pitago-grid-container" style="width: 180px; height: 180px;">
+                                                <div class="pitago-grid" id="report-dob-grid" style="gap: 4px;"></div>
+                                                <svg class="pitago-arrows-overlay" viewBox="0 0 240 240" id="report-dob-overlay" style="width: 180px; height: 180px;"></svg>
+                                            </div>
+                                        </div>
+                                        <!-- Name Grid in Report -->
+                                        <div class="pitago-grid-wrapper" style="transform: scale(0.75); transform-origin: top center; width: 180px;">
+                                            <h4 class="text-sm" style="color: var(--accent-pink); margin-bottom: 5px;">Biểu Đồ Họ Tên</h4>
+                                            <div class="pitago-grid-container" style="width: 180px; height: 180px;">
+                                                <div class="pitago-grid" id="report-name-grid" style="gap: 4px;"></div>
+                                                <svg class="pitago-arrows-overlay" viewBox="0 0 240 240" id="report-name-overlay" style="width: 180px; height: 180px;"></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="report-missing-numbers" class="report-text-content margin-top-sm" style="font-size: 0.85rem;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-divider-subtle"></div>
+
+                        <!-- Timeline Snapshot -->
+                        <div class="report-section">
+                            <h3 class="section-title">5. Tháp Đỉnh Cao Cuộc Đời & Vận Trình</h3>
+                            <div class="report-grid-2col align-center">
+                                <div class="report-col text-center">
+                                    <div id="report-pyramid-container" style="width: 100%; height: 350px; position: relative;">
+                                        <!-- Re-drawn SVG Pyramid -->
+                                    </div>
+                                </div>
+                                <div class="report-col">
+                                    <div class="report-pinnacles-grid" id="report-pinnacles"></div>
+                                    <div id="report-personal-year" class="report-text-content margin-top-md" style="background: rgba(11, 94, 215, 0.05); padding: 16px; border-radius: 8px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-divider-subtle"></div>
+
+                        <!-- Expert Analysis & Healing Tab -->
+                        <div class="report-section" id="report-expert-conflict-section" style="display: none;">
+                            <h3 class="section-title">6. Mâu Thuẫn Nội Tâm Lớn Nhất & Cách Chữa Lành</h3>
+                            <div class="report-text-content" id="report-expert-conflict-content" style="line-height: 1.6; font-size: 0.9rem;">
+                                <!-- Dynamic check by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="report-footer text-center">
+                        Báo cáo tự động tạo bởi Nền Tảng Thần Số Học Nhí &copy; 2026
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer no-print">
+        <div class="footer-container">
+            <p>&copy; 2026 Thần Số Học Nhí - Ứng Dụng Biểu Đồ Trực Quan Hóa Dữ Liệu Lớn.</p>
+            <p class="text-sm">Áp dụng hệ Pythagoras thuần túy kết hợp thiết kế trải nghiệm hiện đại.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- App JS -->
+    <script src="app.js?v=3"></script>
+</body>
+
+</html>
